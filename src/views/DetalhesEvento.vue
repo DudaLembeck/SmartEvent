@@ -12,11 +12,12 @@
           <ion-title size="large">{{ evento?.nome }}</ion-title>
         </ion-toolbar>
       </ion-header>
-
+<div class="buttons">
       <ion-button @click="$router.push('/eventos')" style="margin-top: 0; width: 7%; height: 40px;">
         Voltar
       </ion-button>
-
+        <ion-button @click="$router.push('/favoritos')"  style="margin-top: 0; width: 7%; height: 40px;"> FAVORITOS </ion-button>
+</div>
       <ion-card>
         <ion-card-content>
               <div id="container" v-if="evento">
@@ -41,22 +42,56 @@
                     <p>{{ evento.horario }}</p>
                   </h2>
               </div>
-        </ion-card-content>
-      </ion-card>
-      <div>
-        <ion-button >
+
+              <ion-button @click="toggleFavorito">
+                FAVORITAR EVENTO
+                  <ion-icon :icon="favorito ? star : starOutline" class="star"></ion-icon>
+              </ion-button>
+               <ion-button >
           Comprar Ingresso
         </ion-button>
-      </div>
+        </ion-card-content>
+      </ion-card>
+      
+       
+      
 
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonCard, IonCardContent } from '@ionic/vue'
+
+import { IonIcon } from '@ionic/vue'
+import { starOutline, star } from 'ionicons/icons';
+
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const id = Number(route.params.id)
+
+// 👇 lista de IDs favoritos
+const favoritos = ref<number[]>(
+  JSON.parse(localStorage.getItem('favoritos') || '[]')
+)
+
+// 👇 verifica se esse evento é favorito
+const favorito = computed(() => {
+  return favoritos.value.includes(id)
+})
+
+// 👇 adiciona/remove
+const toggleFavorito = () => {
+  if (favorito.value) {
+    favoritos.value = favoritos.value.filter(f => f !== id)
+  } else {
+    favoritos.value.push(id)
+  }
+
+  localStorage.setItem('favoritos', JSON.stringify(favoritos.value))
+}
 
 
 const listaEventos = 
@@ -93,19 +128,37 @@ const listaEventos =
   }
 ];
 
-const route = useRoute()
 
-const id = computed(() => Number(route.params.id))
 
 const evento = computed(() => {
-  return listaEventos.find(e => e.id === id.value)
+  return listaEventos.find(e => e.id === id)
 })
 </script>
 
 <style scoped>
+
+.buttons {
+  display: flex;
+}
+
+
+.star {
+  margin-left: 40px;
+  font-size: 20px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.star.active {
+  color: gold;
+  transform: scale(1.3);
+}
+
+.star {
+  margin-left: 10px;
+}
 ion-button {
   display: flex;
-  margin-top: 320px;
+  margin-top: 30px;
   margin-bottom: 0;
   padding: 0;
   height: 60px;
