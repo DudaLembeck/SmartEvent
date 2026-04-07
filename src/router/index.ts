@@ -11,7 +11,24 @@ const routes: Array<RouteRecordRaw> = [
     path: '/home',
     name: 'Home',
     component: HomePage
+  },
+   {
+    path: '/eventos',
+    component: () => import("../views/ListaEventos.vue")
+  },
+   {
+    path: '/eventos/:id',
+    component: () => import("../views/DetalhesEvento.vue")
+  },
+  {
+    path: '/perfil',
+    component: () => import("../views/PerfilSobre.vue")
+  },
+   {
+    path: '/favoritos',
+    component: () => import("../views/FavoritosPage.vue")
   }
+
 ]
 
 const router = createRouter({
